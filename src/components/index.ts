@@ -1,2 +1,2 @@
-export { default as ExampleComponent } from "./ExampleComponent";
-export type { ExampleComponentOptions } from "./ExampleComponent";
+export { default as Pseudo } from "./Pseudo";
+export type { PseudoOptions } from "./Pseudo";

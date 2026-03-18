@@ -1,15 +1,16 @@
-export { ExampleTransformer } from "./transformer";
-export { ExampleFilter } from "./filter";
-export { ExampleEmitter } from "./emitter";
-export { default as ExampleComponent } from "./components/ExampleComponent";
+import { default as Pseudo } from "./components/Pseudo";
+import type { PseudoOptions } from "./components/Pseudo";
 
-export type {
-  ExampleTransformerOptions,
-  ExampleFilterOptions,
-  ExampleEmitterOptions,
-} from "./types";
+// Export the component so TS users can use it in quartz.layout.ts
+export { Pseudo };
+export type { PseudoOptions };
 
-export type { ExampleComponentOptions } from "./components/ExampleComponent";
+// Export the init function so YAML users can configure it in quartz.config.yaml
+export function init(options?: Record<string, unknown>): void {
+  // If you add features to PseudoOptions later,
+  // you can capture and process them here.
+  const _myOpts = options as PseudoOptions | undefined;
+}
 
 // Re-export shared types from @quartz-community/types
 export type {

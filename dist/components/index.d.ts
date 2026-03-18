@@ -1,10 +1,7 @@
 import { QuartzComponent } from '@quartz-community/types';
 
-interface ExampleComponentOptions {
-    prefix?: string;
-    suffix?: string;
-    className?: string;
+interface PseudoOptions {
 }
-declare const _default: (opts?: ExampleComponentOptions) => QuartzComponent;
+declare const _default: (_opts?: PseudoOptions) => QuartzComponent;
 
-export { _default as ExampleComponent, type ExampleComponentOptions };
+export { _default as Pseudo, type PseudoOptions };

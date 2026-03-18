@@ -10,6 +10,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
