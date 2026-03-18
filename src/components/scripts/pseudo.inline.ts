@@ -48,7 +48,9 @@ const ensurePseudocodeLoaded = (): Promise<void> => {
 };
 
 const setupPseudocodeRendering = async () => {
-  const codeBlocks = document.querySelectorAll('code[data-language="pseudo"]');
+  const codeBlocks = document.querySelectorAll(
+    'code[data-language="pseudo"], code.language-pseudo, pre[data-language="pseudo"] code',
+  );
   if (codeBlocks.length === 0) return;
 
   // Read options from the hidden config div
@@ -63,8 +65,21 @@ const setupPseudocodeRendering = async () => {
   }
 
   for (const block of codeBlocks) {
-    const content = block.textContent;
-    const preTag = block.parentElement;
+    // --- FIX: Reconstruct newlines from the span elements ---
+    let content = "";
+    const lineSpans = block.querySelectorAll("span[data-line]");
+
+    if (lineSpans.length > 0) {
+      // Extract text from each span and join with a newline character
+      content = Array.from(lineSpans)
+        .map((span) => span.textContent)
+        .join("\n");
+    } else {
+      // Fallback if the syntax highlighter didn't split it into spans
+      content = block.textContent || "";
+    }
+
+    const preTag = block.closest("pre") || block.parentElement;
 
     if (preTag && content && !preTag.classList.contains("pseudocode-rendered")) {
       const container = document.createElement("div");

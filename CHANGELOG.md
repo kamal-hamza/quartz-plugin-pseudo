@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2024-03-18
+
+### Fixed
+
+- Resolved an issue where `rehype-pretty-code` wrapped individual code lines in `<span data-line>` tags, which stripped newlines and caused `pseudocode.js` to fail parsing LaTeX algorithms. The inline script now correctly reconstructs line breaks by mapping the text content of these spans.
+
 ## [0.2.4] - 2024-03-18
 
 ### Changed
