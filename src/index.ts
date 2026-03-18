@@ -1,19 +1,8 @@
-import type { QuartzComponent, QuartzComponentConstructor } from "@quartz-community/types";
 import Pseudo from "./components/Pseudo";
 import type { PseudoOptions } from "./components/Pseudo";
 
-const defaultOptions: PseudoOptions = {};
-
-const PseudoComponent: QuartzComponentConstructor<PseudoOptions> = (userOpts?: PseudoOptions) => {
-  const opts = { ...defaultOptions, ...userOpts };
-
-  const Component: QuartzComponent = Pseudo(opts);
-
-  return Component;
-};
-
-export default PseudoComponent;
-export { PseudoComponent as Pseudo };
+export default Pseudo;
+export { Pseudo };
 export type { PseudoOptions };
 
 // Export the init function so YAML users can configure it in quartz.config.yaml

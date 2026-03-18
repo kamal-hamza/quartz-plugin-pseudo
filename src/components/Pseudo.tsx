@@ -6,11 +6,35 @@ import type {
 import style from "./styles/pseudo.scss";
 import script from "./scripts/pseudo.inline.ts";
 
-export interface PseudoOptions {}
+export interface PseudoOptions {
+  indentSize?: string;
+  lineNumber?: boolean;
+  lineNumberPunc?: string;
+  noEnd?: boolean;
+}
 
-export default ((_opts?: PseudoOptions) => {
+const defaultOptions: PseudoOptions = {
+  indentSize: "1.2em",
+  lineNumber: true,
+  lineNumberPunc: ":",
+  noEnd: false,
+};
+
+export default ((userOpts?: PseudoOptions) => {
+  const opts = { ...defaultOptions, ...userOpts };
+
   const Pseudo: QuartzComponent = ({ children }: QuartzComponentProps) => {
-    return <>{children}</>;
+    // Inject configuration securely so the inline script can read it
+    return (
+      <>
+        <div
+          id="pseudocode-config"
+          style={{ display: "none" }}
+          data-config={JSON.stringify(opts)}
+        />
+        {children}
+      </>
+    );
   };
 
   Pseudo.css = style;

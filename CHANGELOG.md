@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2024-03-18
+
+### Changed
+
+- Refactored component architecture to perfectly match the Quartz v5 native Component Plugin pattern
+- Injected user configurations dynamically into the static client script via a hidden `data-config` HTML attribute
+- Streamlined `pseudo.inline.ts` to dynamically read configuration from the DOM and lazy load stylesheets securely
+- Updated `index.ts` to directly export the component without redundant wrappers
+
+### Fixed
+
+- Resolved the `No matching export` error by restoring the named `Pseudo` export (v0.2.3)
+
 ## [0.2.2] - 2024-03-18
 
 ### Changed
