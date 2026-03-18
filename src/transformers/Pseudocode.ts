@@ -1,6 +1,5 @@
 import type { QuartzTransformerPlugin } from "@quartz-community/types";
 import style from "./styles/pseudo.scss";
-// @ts-expect-error inline script import handled by esbuild plugin
 import script from "./scripts/pseudo.inline.ts";
 
 export interface PseudoOptions {
@@ -23,14 +22,14 @@ export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => 
   return {
     name: "Pseudocode",
     externalResources() {
-      // Inject options globally so the inline script can access them
+      // Pass the options to the window object so the inline script can read them
       const configScript = `window.pseudocodeConfig = ${JSON.stringify(opts)};\n`;
 
       return {
         css: [
           { content: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" },
           { content: "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css" },
-          { content: style }, // Your local SCSS
+          { content: style },
         ],
         js: [
           {
@@ -46,8 +45,8 @@ export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => 
           {
             loadTime: "afterDOMReady",
             contentType: "inline",
-            spaPreserve: true, // Prevents script from reloading on SPA navigation
-            script: configScript + script,
+            spaPreserve: true,
+            script: configScript + script, // Prepend the config to your imported script!
           },
         ],
       };

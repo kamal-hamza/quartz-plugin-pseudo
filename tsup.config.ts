@@ -1,96 +1,42 @@
 import { defineConfig } from "tsup";
-import type { Plugin } from "esbuild";
-import path from "path";
+import * as sass from "sass";
+import * as esbuild from "esbuild";
 
-/**
- * Esbuild plugin that bundles `.inline.ts` files into browser-ready JavaScript strings.
- *
- * Problem: Inline scripts are embedded as raw text into `<script>` tags in the browser.
- * The previous text-loader read `.inline.ts` files verbatim, meaning TypeScript syntax
- * (type annotations, `as` casts, non-null assertions, interfaces) survived into the
- * browser and caused parse errors.
- *
- * Solution: Use `esbuild.build()` to transpile TypeScript and bundle local/npm imports
- * into a single self-contained script. The result is returned as a text string that can
- * be safely injected into a `<script>` tag.
- *
- * This mirrors Quartz v5's own `inline-script-loader` in `quartz/cli/handlers.js`.
- */
-const inlineScriptPlugin: Plugin = {
-  name: "inline-script-loader",
-  setup(parentBuild) {
-    const absWorkingDir = parentBuild.initialOptions.absWorkingDir ?? process.cwd();
-
-    // SCSS files are compiled to CSS via sass, matching Quartz v5 core behavior
-    parentBuild.onLoad({ filter: /\.scss$/ }, async (args) => {
-      const sass = await import("sass");
-      const result = sass.compile(args.path);
-      return { contents: result.css, loader: "text" };
+const quartzInlineLoader = (): esbuild.Plugin => ({
+  name: "quartz-inline-loader",
+  setup(build) {
+    // Compile SCSS to a minified CSS string
+    build.onLoad({ filter: /\.scss$/ }, (args) => {
+      const result = sass.compile(args.path, { style: "compressed" });
+      return {
+        contents: result.css,
+        loader: "text",
+      };
     });
 
-    // Inline TypeScript files are transpiled + bundled for the browser
-    parentBuild.onLoad({ filter: /\.inline\.ts$/ }, async (args) => {
-      const esbuild = await import("esbuild");
-      const fs = await import("fs");
-      let text = await fs.promises.readFile(args.path, "utf8");
-
-      // Strip export statements that were added for the module system —
-      // inline scripts run in a <script> tag, not as ES modules
-      text = text.replace(/^export default /gm, "");
-      text = text.replace(/^export /gm, "");
-
-      const resolveDir = path.dirname(args.path);
-      const sourcefile = path.relative(absWorkingDir, args.path);
-
+    // Compile inline TS to a minified IIFE JavaScript string
+    build.onLoad({ filter: /\.inline\.ts$/ }, async (args) => {
       const result = await esbuild.build({
-        stdin: {
-          contents: text,
-          loader: "ts",
-          resolveDir,
-          sourcefile,
-        },
-        write: false,
+        entryPoints: [args.path],
         bundle: true,
         minify: true,
-        platform: "browser",
-        format: "esm",
+        write: false,
+        format: "iife",
         target: "es2020",
-        sourcemap: false,
-        // Preserve dynamic CDN imports (e.g. graph plugin loading d3/pixi from CDN)
-        external: ["http://*", "https://*"],
       });
-
-      const js = result.outputFiles?.[0]?.text;
-      if (!js) throw new Error(`inline-script-loader: no JS output for ${args.path}`);
-
       return {
-        contents: js,
+        contents: result.outputFiles?.[0]?.text || "",
         loader: "text",
       };
     });
   },
-};
+});
 
 export default defineConfig({
-  entry: {
-    index: "src/index.ts",
-    types: "src/types.ts",
-  },
-  format: ["esm"],
+  entry: ["src/index.ts"],
+  format: ["esm", "cjs"],
   dts: true,
   sourcemap: true,
   clean: true,
-  treeshake: true,
-  target: "es2022",
-  splitting: true,
-  outDir: "dist",
-  platform: "node",
-  banner: {
-    js: 'import { createRequire } from "module"; const require = createRequire(import.meta.url);',
-  },
-  esbuildOptions(options) {
-    options.jsx = "automatic";
-    options.jsxImportSource = "preact";
-  },
-  esbuildPlugins: [inlineScriptPlugin],
+  esbuildPlugins: [quartzInlineLoader()],
 });

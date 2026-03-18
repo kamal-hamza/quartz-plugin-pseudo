@@ -1,16 +1,13 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-
 const setupPseudocodeRendering = () => {
   const codeBlocks = document.querySelectorAll(
     'code[data-language="pseudo"], code.language-pseudo, pre[data-language="pseudo"] code',
   );
   if (codeBlocks.length === 0) return;
 
-  // Options were injected globally by the transformer
+  // @ts-expect-error Added globally via the transformer
   const options = window.pseudocodeConfig || {};
 
-  // Wait until Quartz finishes loading the CDN scripts
+  // @ts-expect-error Loaded globally via Quartz
   if (!window.pseudocode || !window.katex) {
     setTimeout(setupPseudocodeRendering, 100);
     return;
@@ -35,8 +32,10 @@ const setupPseudocodeRendering = () => {
       container.classList.add("pseudocode-container");
 
       try {
+        // @ts-expect-error Loaded globally
         window.pseudocode.render(content, container, {
           ...options,
+          // @ts-expect-error Loaded globally
           katex: window.katex,
         });
 
@@ -54,3 +53,5 @@ if (typeof document !== "undefined") {
   setupPseudocodeRendering();
   document.addEventListener("nav", setupPseudocodeRendering);
 }
+
+export default "";
