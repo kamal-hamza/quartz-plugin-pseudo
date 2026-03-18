@@ -13,6 +13,7 @@ const PseudoComponent: QuartzComponentConstructor<PseudoOptions> = (userOpts?: P
 };
 
 export default PseudoComponent;
+export { PseudoComponent as Pseudo };
 export type { PseudoOptions };
 
 // Export the init function so YAML users can configure it in quartz.config.yaml
