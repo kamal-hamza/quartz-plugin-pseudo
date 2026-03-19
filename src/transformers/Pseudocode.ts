@@ -1,6 +1,19 @@
 import type { QuartzTransformerPlugin } from "@quartz-community/types";
-import style from "./styles/pseudo.scss";
+// @ts-ignore
+import style from "./styles/pseudo.scss?inline";
 import script from "./scripts/pseudo.inline.ts";
+
+// Import CSS as strings (handled by tsup loader and Vitest ?raw)
+// @ts-ignore
+import katexCss from "katex/dist/katex.min.css?raw";
+// @ts-ignore
+import pseudocodeCss from "pseudocode/build/pseudocode.min.css?raw";
+
+// Import JS as raw strings (handled by tsup loader with ?raw)
+// @ts-ignore
+import katexJs from "katex/dist/katex.min.js?raw";
+// @ts-ignore
+import pseudocodeJs from "pseudocode/build/pseudocode.min.js?raw";
 
 export interface PseudoOptions {
   indentSize?: string;
@@ -28,28 +41,21 @@ export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => 
       // Pass the options to the window object so the inline script can read them
       const configScript = `window.pseudocodeConfig = ${JSON.stringify(opts)};\n`;
 
+      // Inject libraries into window
+      const libraryScript = katexJs + pseudocodeJs + script;
+
       return {
         css: [
-          { content: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" },
-          { content: "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css" },
+          { content: katexCss, inline: true },
+          { content: pseudocodeCss, inline: true },
           { content: style, inline: true },
         ],
         js: [
           {
-            src: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js",
-            loadTime: "afterDOMReady",
-            contentType: "external",
-          },
-          {
-            src: "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js",
-            loadTime: "afterDOMReady",
-            contentType: "external",
-          },
-          {
             loadTime: "afterDOMReady",
             contentType: "inline",
             spaPreserve: true,
-            script: configScript + script, // Prepend the config to your imported script!
+            script: configScript + libraryScript,
           },
         ],
       };

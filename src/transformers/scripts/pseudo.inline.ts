@@ -25,7 +25,10 @@ const setupPseudocodeRendering = () => {
       content = block.textContent || "";
     }
 
-    const targetNode = block.closest("figure") || block.closest("pre") || block.parentElement;
+    // Fix: We want to replace the <pre> block (which contains the code),
+    // but NOT the <figure> wrapper if it exists (which Quartz uses for layout/captions).
+    // If no <pre> exists (unlikely for block code), fallback to the code block itself.
+    const targetNode = block.closest("pre") || block;
 
     if (targetNode && content && !targetNode.classList.contains("pseudocode-rendered")) {
       const container = document.createElement("div");

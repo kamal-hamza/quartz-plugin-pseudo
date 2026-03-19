@@ -5,5 +5,10 @@ export default defineConfig({
     environment: "node",
     include: ["test/**/*.test.ts"],
     reporters: ["default"],
+    server: {
+      deps: {
+        inline: ["katex", "pseudocode"],
+      },
+    },
   },
 });

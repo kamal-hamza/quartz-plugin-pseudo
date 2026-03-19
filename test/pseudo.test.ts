@@ -14,44 +14,41 @@ describe("Pseudocode Transformer", () => {
 
     // CSS
     expect(resources!.css).toBeDefined();
-    expect(resources!.css?.length).toBeGreaterThan(0);
-    expect(
-      resources!.css?.some((c) => typeof c !== "string" && c.content?.includes("katex.min.css")),
-    ).toBe(true);
-    expect(
-      resources!.css?.some(
-        (c) => typeof c !== "string" && c.content?.includes("pseudocode.min.css"),
-      ),
-    ).toBe(true);
+    expect(resources!.css?.length).toBe(3); // KaTeX, Pseudocode, and custom style
+
+    // Verify CSS resources are inline
+    resources!.css?.forEach((c) => {
+      expect(typeof c).not.toBe("string");
+      if (typeof c !== "string") {
+        expect(c.inline).toBe(true);
+        expect(c.content).toBeDefined();
+        expect(typeof c.content).toBe("string");
+      }
+    });
 
     // JS
     expect(resources!.js).toBeDefined();
-    expect(resources!.js?.length).toBeGreaterThan(0);
-    expect(
-      resources!.js?.some(
-        (j) =>
-          typeof j !== "string" &&
-          "src" in j &&
-          (j as { src?: string }).src?.includes("katex.min.js"),
-      ),
-    ).toBe(true);
-    expect(
-      resources!.js?.some(
-        (j) =>
-          typeof j !== "string" &&
-          "src" in j &&
-          (j as { src?: string }).src?.includes("pseudocode.min.js"),
-      ),
-    ).toBe(true);
+    // We expect exactly one JS resource now (bundled inline script)
+    expect(resources!.js?.length).toBe(1);
 
-    // Inline script containing default configuration
-    const inlineScript = resources!.js?.find(
-      (j) => typeof j !== "string" && j.contentType === "inline",
-    );
-    expect(inlineScript).toBeDefined();
-    if (inlineScript && typeof inlineScript !== "string" && "script" in inlineScript) {
-      expect((inlineScript as { script: string }).script).toContain("window.pseudocodeConfig");
-      expect((inlineScript as { script: string }).script).toContain("1.2em"); // Default indentSize
+    const inlineScript = resources!.js![0];
+
+    expect(typeof inlineScript).not.toBe("string");
+    if (typeof inlineScript !== "string") {
+      expect(inlineScript.contentType).toBe("inline");
+      expect(inlineScript.loadTime).toBe("afterDOMReady");
+      expect("script" in inlineScript).toBe(true);
+
+      const scriptContent = (inlineScript as { script: string }).script;
+
+      // Check for config injection
+      expect(scriptContent).toContain("window.pseudocodeConfig");
+      expect(scriptContent).toContain("1.2em"); // Default indentSize
+
+      // Check that it looks like it contains the libraries (significantly large string)
+      // KaTeX minified is ~250KB, Pseudocode is ~10KB.
+      // This is a rough check to ensure imports worked.
+      expect(scriptContent.length).toBeGreaterThan(1000);
     }
   });
 
@@ -66,9 +63,10 @@ describe("Pseudocode Transformer", () => {
     );
     expect(inlineScript).toBeDefined();
     if (inlineScript && typeof inlineScript !== "string" && "script" in inlineScript) {
-      expect((inlineScript as { script: string }).script).toContain("window.pseudocodeConfig");
-      expect((inlineScript as { script: string }).script).toContain("3em"); // Custom indentSize
-      expect((inlineScript as { script: string }).script).toContain('"lineNumber":false'); // Custom lineNumber
+      const scriptContent = (inlineScript as { script: string }).script;
+      expect(scriptContent).toContain("window.pseudocodeConfig");
+      expect(scriptContent).toContain("3em"); // Custom indentSize
+      expect(scriptContent).toContain('"lineNumber":false'); // Custom lineNumber
     }
   });
 });

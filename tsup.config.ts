@@ -1,15 +1,83 @@
 import { defineConfig } from "tsup";
 import * as sass from "sass";
 import * as esbuild from "esbuild";
+import fs from "fs/promises";
 
 const quartzInlineLoader = (): esbuild.Plugin => ({
   name: "quartz-inline-loader",
   setup(build) {
-    // Compile SCSS to a minified CSS string
+    // Handle ?raw imports (imports file content as string)
+    build.onResolve({ filter: /\?raw$/ }, (args) => {
+      return {
+        path: args.path,
+        namespace: "raw-loader",
+        pluginData: { resolveDir: args.resolveDir },
+      };
+    });
+
+    build.onLoad({ filter: /\?raw$/, namespace: "raw-loader" }, async (args) => {
+      const realPath = args.path.replace(/\?raw$/, "");
+      const result = await build.resolve(realPath, {
+        resolveDir: args.pluginData.resolveDir,
+        kind: "import-statement",
+      });
+
+      if (result.errors.length > 0) {
+        return { errors: result.errors };
+      }
+
+      return {
+        contents: await fs.readFile(result.path, "utf-8"),
+        loader: "text",
+      };
+    });
+
+    // Handle SCSS imports (both normal and ?inline)
+    build.onResolve({ filter: /\.scss(\?inline)?$/ }, async (args) => {
+      // If it has the suffix, we must resolve it manually to find the file
+      if (args.path.endsWith("?inline")) {
+        const realPath = args.path.replace(/\?inline$/, "");
+        const result = await build.resolve(realPath, {
+          resolveDir: args.resolveDir,
+          kind: "import-statement",
+        });
+
+        if (result.errors.length > 0) {
+          return { errors: result.errors };
+        }
+
+        return {
+          path: result.path,
+          namespace: "scss-loader",
+        };
+      }
+      // Otherwise allow default resolution
+      return undefined;
+    });
+
+    // Load SCSS from custom namespace (from ?inline resolution)
+    build.onLoad({ filter: /.*/, namespace: "scss-loader" }, (args) => {
+      const result = sass.compile(args.path, { style: "compressed" });
+      return {
+        contents: result.css,
+        loader: "text",
+      };
+    });
+
+    // Load SCSS from default file namespace (normal imports without suffix)
     build.onLoad({ filter: /\.scss$/ }, (args) => {
       const result = sass.compile(args.path, { style: "compressed" });
       return {
         contents: result.css,
+        loader: "text",
+      };
+    });
+
+    // Load CSS files as text strings
+    build.onLoad({ filter: /\.css$/ }, async (args) => {
+      const css = await fs.readFile(args.path, "utf-8");
+      return {
+        contents: css,
         loader: "text",
       };
     });
@@ -48,5 +116,6 @@ export default defineConfig({
   banner: {
     js: 'import { createRequire } from "module"; const require = createRequire(import.meta.url);',
   },
+  noExternal: ["katex", "pseudocode"],
   esbuildPlugins: [quartzInlineLoader()],
 });
