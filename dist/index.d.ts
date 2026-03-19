@@ -7,6 +7,6 @@ interface PseudoOptions {
     lineNumberPunc?: string;
     noEnd?: boolean;
 }
-declare const Pseudocode: QuartzTransformerPlugin<PseudoOptions>;
+declare const QuartzPluginPseudo: QuartzTransformerPlugin<PseudoOptions>;
 
-export { type PseudoOptions, Pseudocode };
+export { type PseudoOptions, QuartzPluginPseudo };

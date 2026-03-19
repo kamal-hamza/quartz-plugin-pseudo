@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { Pseudocode } from "../src/transformers/Pseudocode";
+import { QuartzPluginPseudo } from "../src/transformers/Pseudocode";
 
 describe("Pseudocode Transformer", () => {
   it("returns the correct plugin name", () => {
-    const plugin = Pseudocode();
+    const plugin = QuartzPluginPseudo();
     expect(plugin.name).toBe("Pseudocode");
   });
 
   it("injects default external resources correctly", () => {
-    const plugin = Pseudocode();
+    const plugin = QuartzPluginPseudo();
     // @ts-expect-error Mock context
     const resources = plugin.externalResources ? plugin.externalResources({}) : { css: [], js: [] };
 
@@ -56,7 +56,7 @@ describe("Pseudocode Transformer", () => {
   });
 
   it("respects custom user options", () => {
-    const plugin = Pseudocode({ indentSize: "3em", lineNumber: false });
+    const plugin = QuartzPluginPseudo({ indentSize: "3em", lineNumber: false });
     // @ts-expect-error Mock context
     const resources = plugin.externalResources ? plugin.externalResources({}) : { css: [], js: [] };
 
