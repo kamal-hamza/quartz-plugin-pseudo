@@ -32,7 +32,7 @@ export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => 
         css: [
           { content: "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" },
           { content: "https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css" },
-          { content: style },
+          { content: style, inline: true },
         ],
         js: [
           {
