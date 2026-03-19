@@ -21,6 +21,9 @@ export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => 
 
   return {
     name: "Pseudocode",
+    markdownPlugins() {
+      return [];
+    },
     externalResources() {
       // Pass the options to the window object so the inline script can read them
       const configScript = `window.pseudocodeConfig = ${JSON.stringify(opts)};\n`;
