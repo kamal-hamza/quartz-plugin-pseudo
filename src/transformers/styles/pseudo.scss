@@ -5,17 +5,21 @@
 
   /* Remove default black bars from pseudocode.js and match theme */
   .ps-root {
-    border-top: 2px solid var(--gray);
-    border-bottom: 2px solid var(--gray);
+    border: none !important;
     color: var(--dark);
     background-color: transparent;
+    margin: 0;
+    padding: 0;
 
     .ps-algorithm {
-      border: none;
+      border: none !important;
+      padding: 0;
     }
 
     .ps-line {
-      border-bottom: none;
+      border: none !important;
+      margin: 0;
+      padding: 0.1rem 0;
     }
   }
 }
