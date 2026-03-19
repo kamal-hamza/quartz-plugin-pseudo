@@ -1,25 +1,62 @@
 .pseudocode-container {
   overflow-x: auto;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   border-radius: 5px;
 
-  /* Remove default black bars from pseudocode.js and match theme */
+  /* Remove default black bars and excessive spacing */
   .ps-root {
     border: none !important;
     color: var(--dark);
     background-color: transparent;
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: inherit;
 
     .ps-algorithm {
       border: none !important;
-      padding: 0;
+      padding: 0 !important;
+      margin: 0 !important;
+
+      &.with-caption {
+        > .ps-line:first-child {
+          border-bottom: 1px solid var(--gray);
+          margin-bottom: 0.5rem;
+          padding-bottom: 0.2rem;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .ps-algorithmic {
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
     .ps-line {
       border: none !important;
-      margin: 0;
-      padding: 0.1rem 0;
+      margin: 0 !important;
+      padding: 0.1rem 0 !important;
+      line-height: 1.5;
+
+      &.ps-code {
+        position: relative;
+      }
+    }
+
+    .ps-linenum {
+      color: var(--gray);
+      font-size: 0.8em;
+      padding-right: 1em;
+    }
+
+    .ps-keyword {
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    .ps-funcname {
+      font-weight: bold;
+      color: var(--tertiary);
     }
   }
 }
