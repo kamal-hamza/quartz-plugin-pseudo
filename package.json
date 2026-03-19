@@ -93,7 +93,7 @@
     "vitest": "^2.1.9"
   },
   "quartz": {
-    "name": "quartz-plugin-pseudo",
+    "name": "pseudocode",
     "displayName": "Pseudocode",
     "category": "transformer",
     "defaultEnabled": true,

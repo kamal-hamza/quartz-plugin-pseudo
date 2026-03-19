@@ -11,7 +11,7 @@ var defaultOptions = {
   lineNumberPunc: ":",
   noEnd: false
 };
-var QuartzPluginPseudo = (userOpts) => {
+var Pseudocode = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   return {
     name: "Pseudocode",
@@ -48,6 +48,6 @@ var QuartzPluginPseudo = (userOpts) => {
   };
 };
 export {
-  QuartzPluginPseudo
+  Pseudocode
 };
 //# sourceMappingURL=index.js.map

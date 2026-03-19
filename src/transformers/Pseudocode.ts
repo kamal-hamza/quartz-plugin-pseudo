@@ -16,7 +16,7 @@ const defaultOptions: PseudoOptions = {
   noEnd: false,
 };
 
-export const QuartzPluginPseudo: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => {
+export const Pseudocode: QuartzTransformerPlugin<PseudoOptions> = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
 
   return {
