@@ -64,6 +64,36 @@
 }
 
 .pseudocode-error {
-  border-left: 4px solid var(--err);
-  padding-left: 1rem;
+  border: 1px solid var(--light);
+  border-left: 4px solid var(--err, red);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+  background-color: var(--light);
+  overflow-x: auto;
+
+  &-title {
+    font-weight: bold;
+    color: var(--err, red);
+    margin-bottom: 0.5rem;
+  }
+
+  &-message {
+    margin: 0 0 0.5rem 0;
+    color: var(--darkgray);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.9em;
+  }
+
+  &-code {
+    margin: 0;
+    padding: 0.5rem;
+    background-color: var(--highlight, rgba(0, 0, 0, 0.05));
+    border-radius: 3px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 0.85em;
+    color: var(--dark);
+  }
 }

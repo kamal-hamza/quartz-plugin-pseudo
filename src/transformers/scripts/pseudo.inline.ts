@@ -46,7 +46,27 @@ const setupPseudocodeRendering = () => {
         targetNode.replaceWith(container);
       } catch (e) {
         console.error("Pseudocode.js failed to render:", e);
-        targetNode.classList.add("pseudocode-rendered", "pseudocode-error");
+
+        const errorContainer = document.createElement("div");
+        errorContainer.classList.add("pseudocode-error");
+
+        const errorTitle = document.createElement("div");
+        errorTitle.classList.add("pseudocode-error-title");
+        errorTitle.textContent = "Pseudocode Rendering Error";
+
+        const errorMessage = document.createElement("div");
+        errorMessage.classList.add("pseudocode-error-message");
+        errorMessage.textContent = e instanceof Error ? e.message : String(e);
+
+        const errorCode = document.createElement("pre");
+        errorCode.classList.add("pseudocode-error-code");
+        errorCode.textContent = content;
+
+        errorContainer.appendChild(errorTitle);
+        errorContainer.appendChild(errorMessage);
+        errorContainer.appendChild(errorCode);
+
+        targetNode.replaceWith(errorContainer);
       }
     }
   }
